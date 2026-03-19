@@ -217,9 +217,12 @@
 
 <div id="star-bar">
   <div class="stars-row" id="stars-row"></div>
-  <div class="lang-toggle">
-    <button class="lang-btn active" id="btn-es" onclick="setLang('es')">🇲🇽 ES</button>
-    <button class="lang-btn" id="btn-en" onclick="setLang('en')">🇺🇸 EN</button>
+  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0">
+    <div class="lang-toggle">
+      <button class="lang-btn active" id="btn-es" onclick="setLang('es')">🇲🇽 ES</button>
+      <button class="lang-btn" id="btn-en" onclick="setLang('en')">🇺🇸 EN</button>
+    </div>
+    <button onclick="confirmReset()" style="font-size:10px;color:var(--muted);background:none;border:none;cursor:pointer;padding:0;font-family:'Nunito',sans-serif;">reiniciar ⟳</button>
   </div>
 </div>
 
@@ -425,7 +428,10 @@ function addStar(){
   const el=document.getElementById('s'+stars);
   if(el){el.style.transform='scale(1.5)';setTimeout(()=>el.style.transform='',400);}
   if(stars>=MAX_STARS) setTimeout(celebrate,700);
-  else setTimeout(checkMotivation, 500);
+  else {
+    setTimeout(checkMotivation, 500);
+    if(currentActivity) recordModuleStar(currentActivity);
+  }
 }
 function celebrate(){
   launchConfetti();const t=T[lang];
@@ -492,7 +498,6 @@ function goHome(){
 }
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
 function startActivity(type){
-  if(checkModuleLock(type)) return;
   currentActivity=type;showScreen('activity');
   const icons={letters:'🔤',numbers:'🔢',addition:'➕',writing:'✏️',reading:'📖'};
   document.getElementById('act-icon').textContent=icons[type];
@@ -890,25 +895,24 @@ function parentOverride(isRight){
 }
 
 // ── MODULE LOCK ──
-let moduleStars = {}; // tracks stars per module in current session
 let lastModule = null;
-let consecutiveInModule = 0;
+let starsInCurrentModule = 0;
 
-function checkModuleLock(type){
-  if(type === lastModule){
-    consecutiveInModule++;
-  } else {
+function recordModuleStar(type){
+  // Called each time a star is earned in a module
+  if(type !== lastModule){
     lastModule = type;
-    consecutiveInModule = 1;
+    starsInCurrentModule = 1;
+  } else {
+    starsInCurrentModule++;
   }
-  if(consecutiveInModule > 5){
-    showModuleLockPopup(type);
-    return true; // locked
+  if(starsInCurrentModule >= 5){
+    setTimeout(()=>showModuleLockPopup(type), 800);
   }
-  return false;
 }
 
 function showModuleLockPopup(type){
+  starsInCurrentModule = 0;
   const otherMenus = T[lang].menus.filter(m=>m.type!==type);
   const suggestions = otherMenus.map(m=>`<button onclick="closeLockPopup('${m.type}')" style="background:var(--card);border:3px solid var(--purple-light);border-radius:14px;padding:14px;font-family:'Baloo 2',cursive;font-size:17px;cursor:pointer;width:100%;margin-bottom:8px;">${m.icon} ${m.label}</button>`).join('');
   const msg = lang==='es'
@@ -926,9 +930,14 @@ function showModuleLockPopup(type){
 
 function closeLockPopup(newType){
   document.getElementById('motivation-popup').classList.remove('show');
-  consecutiveInModule = 1;
   lastModule = newType;
-  startActivity(newType);
+  starsInCurrentModule = 0;
+  currentActivity = newType;
+  showScreen('activity');
+  const icons={letters:'🔤',numbers:'🔢',addition:'➕',writing:'✏️',reading:'📖'};
+  document.getElementById('act-icon').textContent=icons[newType];
+  document.getElementById('act-title').textContent=T[lang].actTitles[newType];
+  renderQuestion(newType);
 }
 
 // ── MOTIVATION POPUP ──
@@ -957,6 +966,16 @@ function checkMotivation(){
 function closeMotivation(){
   document.getElementById('motivation-popup').classList.remove('show');
 }
+function confirmReset(){
+  const msg=lang==='es'?'¿Regresar las estrellas a cero?':'Reset stars to zero?';
+  if(confirm(msg)){
+    stars=0;
+    localStorage.setItem('loretta_stars','0');
+    starsInCurrentModule=0; lastModule=null;
+    buildStarBar();
+  }
+}
+
 // ── UTILS ──
 function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 
