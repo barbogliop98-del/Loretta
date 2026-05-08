@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trivia del Día de las Madres 🌸</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --rose: #D4537E;
+    --rose-dark: #993556;
+    --rose-light: #FBEAF0;
+    --rose-mid: #F4C0D1;
+    --green-light: #EAF3DE;
+    --green-dark: #27500A;
+    --green-mid: #639922;
+    --red-light: #FCEBEB;
+    --red-dark: #791F1F;
+    --red-mid: #E24B4A;
+    --cream: #FFF9F5;
+    --text: #2C1A22;
+    --text-muted: #9B7389;
+    --white: #ffffff;
+    --shadow: 0 8px 32px rgba(212,83,126,0.12);
+    --shadow-lg: 0 20px 60px rgba(212,83,126,0.18);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--cream);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 10% 10%, rgba(212,83,126,0.08) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 60% at 90% 90%, rgba(244,192,209,0.12) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 50% at 80% 10%, rgba(234,243,222,0.15) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .petals-bg {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .petal {
+    position: absolute;
+    font-size: 20px;
+    opacity: 0.18;
+    animation: floatPetal linear infinite;
+  }
+
+  @keyframes floatPetal {
+    0% { transform: translateY(-40px) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.18; }
+    90% { opacity: 0.18; }
+    100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 520px;
+  }
+
+  /* HEADER */
+  .header {
+    text-align: center;
+    margin-bottom: 2rem;
+    animation: fadeDown 0.6s ease both;
+  }
+
+  .header .emoji-row {
+    font-size: 28px;
+    letter-spacing: 6px;
+    margin-bottom: 0.75rem;
+    display: block;
+  }
+
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--rose-dark);
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
+
+  .header p {
+    font-size: 15px;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+
+  /* PROGRESS */
+  .progress-wrap {
+    margin-bottom: 1.5rem;
+    animation: fadeDown 0.6s 0.1s ease both;
+  }
+
+  .progress-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .progress-top span {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--rose);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .progress-track {
+    width: 100%;
+    height: 10px;
+    background: var(--rose-mid);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--rose) 0%, var(--rose-dark) 100%);
+    border-radius: 99px;
+    transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  /* CARD */
+  .card {
+    background: var(--white);
+    border-radius: 24px;
+    padding: 2rem 1.75rem;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid rgba(212,83,126,0.08);
+    animation: fadeUp 0.5s ease both;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--rose-mid), var(--rose), var(--rose-dark));
+  }
+
+  .q-label {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--rose);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .q-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--rose-mid);
+  }
+
+  .q-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 21px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.4;
+    margin-bottom: 1.5rem;
+  }
+
+  /* OPTIONS */
+  .options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 1.25rem;
+  }
+
+  .opt {
+    background: var(--rose-light);
+    border: 1.5px solid rgba(212,83,126,0.15);
+    border-radius: 14px;
+    padding: 13px 10px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    cursor: pointer;
+    text-align: center;
+    line-height: 1.35;
+    transition: all 0.18s ease;
+    font-family: 'Nunito', sans-serif;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .opt:hover:not(:disabled) {
+    background: var(--rose-mid);
+    border-color: var(--rose);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(212,83,126,0.2);
+  }
+
+  .opt:active:not(:disabled) {
+    transform: scale(0.96);
+  }
+
+  .opt.correct {
+    background: var(--green-light);
+    border-color: var(--green-mid);
+    color: var(--green-dark);
+  }
+
+  .opt.shake {
+    background: var(--red-light);
+    border-color: var(--red-mid);
+    color: var(--red-dark);
+    animation: shake 0.4s ease;
+  }
+
+  .opt:disabled { cursor: default; }
+
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20% { transform: translateX(-7px); }
+    40% { transform: translateX(7px); }
+    60% { transform: translateX(-5px); }
+    80% { transform: translateX(5px); }
+  }
+
+  /* FEEDBACK */
+  .feedback {
+    min-height: 50px;
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 15px;
+    font-weight: 700;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.4;
+    transition: all 0.2s ease;
+  }
+
+  .feedback.hidden { opacity: 0; pointer-events: none; }
+  .feedback.correct { background: var(--green-light); color: var(--green-dark); }
+  .feedback.wrong { background: var(--red-light); color: var(--red-dark); }
+
+  /* NEXT BUTTON */
+  .next-btn {
+    width: 100%;
+    margin-top: 1rem;
+    background: linear-gradient(135deg, var(--rose) 0%, var(--rose-dark) 100%);
+    color: var(--white);
+    border: none;
+    border-radius: 14px;
+    padding: 14px 24px;
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+    letter-spacing: 0.3px;
+    transition: all 0.18s ease;
+    box-shadow: 0 4px 20px rgba(153,53,86,0.3);
+  }
+
+  .next-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(153,53,86,0.4);
+  }
+
+  .next-btn:active { transform: scale(0.98); }
+
+  /* END CARD */
+  .end-card {
+    background: var(--white);
+    border-radius: 24px;
+    padding: 2.5rem 2rem;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid rgba(212,83,126,0.08);
+    text-align: center;
+    animation: fadeUp 0.6s ease both;
+    display: none;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .end-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--rose-mid), var(--rose), var(--rose-dark));
+  }
+
+  .end-card .big-emoji {
+    font-size: 56px;
+    margin-bottom: 1rem;
+    display: block;
+    animation: bounceIn 0.6s 0.2s ease both;
+  }
+
+  @keyframes bounceIn {
+    0% { transform: scale(0); opacity: 0; }
+    60% { transform: scale(1.15); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .end-card h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--rose-dark);
+    margin-bottom: 6px;
+  }
+
+  .end-card .sub {
+    font-size: 14px;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+  }
+
+  .gift-box {
+    background: linear-gradient(135deg, var(--rose-light) 0%, #FDE8F0 100%);
+    border: 2px solid var(--rose-mid);
+    border-radius: 18px;
+    padding: 1.5rem 1.25rem;
+    margin-bottom: 1.25rem;
+    position: relative;
+  }
+
+  .gift-box .gift-icon {
+    font-size: 40px;
+    display: block;
+    margin-bottom: 10px;
+    animation: wiggle 1s 0.8s ease infinite;
+  }
+
+  @keyframes wiggle {
+    0%,100% { transform: rotate(0deg); }
+    25% { transform: rotate(-8deg); }
+    75% { transform: rotate(8deg); }
+  }
+
+  .gift-box .gift-label {
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--rose);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+  }
+
+  .gift-box .gift-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--rose-dark);
+    line-height: 1.55;
+  }
+
+  .score-badge {
+    display: inline-block;
+    background: var(--rose-light);
+    color: var(--rose-dark);
+    border: 1.5px solid var(--rose-mid);
+    border-radius: 99px;
+    padding: 8px 22px;
+    font-size: 15px;
+    font-weight: 800;
+    margin-bottom: 1.25rem;
+  }
+
+  .restart-btn {
+    background: transparent;
+    border: 1.5px solid var(--rose-mid);
+    border-radius: 12px;
+    padding: 10px 24px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+    transition: all 0.18s ease;
+  }
+
+  .restart-btn:hover {
+    background: var(--rose-light);
+    color: var(--rose-dark);
+    border-color: var(--rose);
+  }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .question-enter {
+    animation: fadeUp 0.35s ease both;
+  }
+</style>
+</head>
+<body>
+
+<div class="petals-bg" id="petals-bg"></div>
+
+<div class="container">
+  <div class="header">
+    <span class="emoji-row">🌸 🌺 💐 🌺 🌸</span>
+    <h1>Trivia del Día<br>de las Madres</h1>
+    <p>¿Qué tanto conocen a mamá?</p>
+  </div>
+
+  <div class="progress-wrap" id="progress-wrap">
+    <div class="progress-top">
+      <span id="prog-label">Pregunta 1 de 13</span>
+      <span id="prog-pct">0%</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="prog-fill" style="width:0%"></div>
+    </div>
+  </div>
+
+  <div class="card" id="q-card">
+    <div class="q-label" id="q-num">Pregunta 1</div>
+    <div class="q-text" id="q-text"></div>
+    <div class="options" id="options"></div>
+    <div class="feedback hidden" id="feedback"></div>
+    <button class="next-btn" id="next-btn" style="display:none" onclick="nextQuestion()">Siguiente ➜</button>
+  </div>
+
+  <div class="end-card" id="end-card">
+    <span class="big-emoji">💐</span>
+    <h2>¡Feliz Día de las Madres!</h2>
+    <p class="sub">¡Lo lograron! Aquí está la pista del regalo:</p>
+
+    <div class="gift-box">
+      <span class="gift-icon">🎁</span>
+      <div class="gift-label">Pista del regalo</div>
+      <div class="gift-text">Hay un sobre escondido donde Loretta y Lu se vuelven locas cuando se suben… pero cuando mamá se subió hace mucho, ¡casi se desmaya! 😂</div>
+    </div>
+
+    <div class="score-badge" id="score-badge"></div>
+    <br><br>
+    <button class="restart-btn" onclick="restartGame()">Jugar de nuevo 🔄</button>
+  </div>
+</div>
+
+<script>
+const questions = [
+  { q: "¿Dónde fue nuestro primer date?", correct: "Taco con Botas", options: ["Taco con Botas", "Concierto Enrique Iglesias", "Gym", "Motel el Pingüino"] },
+  { q: "Cuando hacen corajes, tus hijas se parecen más a…", correct: "Mamá", options: ["Mamá", "Papá", "Un perro pug", "Unos Labubus"] },
+  { q: "Cuando Loretta dice \"¡Ay qué bonito!\", ¿qué animal es?", correct: "Osos panda", options: ["Osos panda", "Cucaracha", "Papá", "Perro"] },
+  { q: "¿A Lu le gusta que le imprima…?", correct: "Hello Kitty", options: ["Hello Kitty", "Una popo", "Venado con corazones", "Perros"] },
+  { q: "¿Quién dice \"No pasa nada\"?", correct: "Loretta", options: ["Loretta", "Lu", "Papá", "Moka"] },
+  { q: "¿Quién dice \"No importa\"?", correct: "Lu", options: ["Lu", "Loretta", "Buzz", "Mamá"] },
+  { q: "¿Qué les gusta hacer a las 3 niñas en la cocina?", correct: "Un bataquero", options: ["Un bataquero", "Pasteles", "Pizzas", "Molestar a mamá"] },
+  { q: "¿Qué es lo que papá ama más de mamá?", correct: "¡Todo lo anterior!", options: ["¡Todo lo anterior!", "Cómo cuida a las niñas", "Cómo siempre está para la familia", "Todo lo que hace en la casa"] },
+  { q: "¿Quién le echa carilla a papá de pelón y gordo?", correct: "Loretta y Lu", options: ["Loretta y Lu", "Mamá", "Moka", "Buzz"] },
+  { q: "¿Qué hace mamá cuando se enoja?", correct: "¡Todo lo anterior!", options: ["¡Todo lo anterior!", "Se echa un pun", "Corre", "Rompe cosas"] },
+  { q: "¿Quién habla más: mamá o papá?", correct: "Papá", options: ["Papá", "Mamá", "Los dos", "Ninguno"] },
+  { q: "¿Qué crees que sueña mamá?", correct: "Con papá", options: ["Con papá", "Que es una superheroína", "Que tiene alas", "Que corre rápido"] },
+  { q: "¿A qué le tiene más miedo mamá?", correct: "Una Labubu con cucarachas", options: ["Una Labubu con cucarachas", "A papá enojado", "A la panzota de papá", "A que Moka se coma huevos"] }
+];
+
+const wrongMessages = [
+  "¡Esa no era! 😅 ¡Sigue intentando!",
+  "¡Nooo! 😂 ¡Esa estuvo cerca pero no!",
+  "¡Ay, ay, ay! 🙈 ¡Mamá ya te está poniendo ojo!",
+  "¡Fría, fría! 🥶 ¡Vuelve a intentarlo!",
+  "¡Epa! Esa no. 😜 ¡Escoge otra!",
+  "¡Casi, pero no! 😂 ¡Sigue buscando!",
+  "¡Nop! 😬 ¡Tú puedes, busca bien!",
+];
+
+const correctMessages = [
+  "¡Muy bien hermosa! 💐",
+  "¡Eso es! ¿Ven? ¡Sí ponen atención cuando quieren! 😏",
+  "¡Correcto! Papá está impresionado... y eso es difícil 🤌",
+  "¡Ajá! ¡Las tres juntas son imparables! 🙌",
+  "¡Sí, sí, sí! ¡Qué equipazo de niñas! 💪",
+  "¡Exacto! ¡Tienen más memoria que el teléfono de papá! 📱",
+  "¡Bien! ¡Moka también quería aplaudir pero no tiene manos! 🐶",
+  "¡Correcto! Buzz Lightyear está orgulloso de ustedes 🚀",
+  "¡Eso mero! ¡Tres genias con corona y todo! 👑👑👑",
+  "¡Órale! ¡Esa sí la tenían bien guardada! 🧠✨",
+  "¡Sí señor! ¡Papá ya está llorando de la emoción! 😭🌸",
+  "¡Brillante! ¡Ni la cucaracha de Loretta lo hubiera sabido! 🪲😂",
+  "¡CORRECTO! ¡Las tres juntas son más listas que todo el vecindario! 🏆",
+];
+
+let current = 0;
+let score = 0;
+let correctAnswered = false;
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function loadQuestion() {
+  const q = questions[current];
+  correctAnswered = false;
+
+  document.getElementById('q-num').textContent = 'Pregunta ' + (current + 1);
+  document.getElementById('q-text').textContent = q.q;
+
+  const pct = Math.round((current / 13) * 100);
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-pct').textContent = pct + '%';
+  document.getElementById('prog-label').textContent = 'Pregunta ' + (current + 1) + ' de 13';
+
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback hidden';
+  fb.textContent = '';
+  document.getElementById('next-btn').style.display = 'none';
+
+  const container = document.getElementById('options');
+  container.innerHTML = '';
+  shuffle(q.options).forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'opt';
+    btn.textContent = opt;
+    btn.onclick = () => selectAnswer(opt, btn, q.correct);
+    container.appendChild(btn);
+  });
+
+  const card = document.getElementById('q-card');
+  card.classList.remove('question-enter');
+  void card.offsetWidth;
+  card.classList.add('question-enter');
+}
+
+function selectAnswer(sel, btn, correct) {
+  if (correctAnswered) return;
+  const fb = document.getElementById('feedback');
+
+  if (sel === correct) {
+    correctAnswered = true;
+    score++;
+    document.querySelectorAll('.opt').forEach(b => {
+      b.disabled = true;
+      if (b.textContent === correct) b.classList.add('correct');
+    });
+    const msg = correctMessages[Math.min(score - 1, correctMessages.length - 1)];
+    fb.textContent = msg;
+    fb.className = 'feedback correct';
+    const nb = document.getElementById('next-btn');
+    nb.style.display = 'block';
+    nb.textContent = current === 12 ? '¡Ver mi regalo! 🎁' : 'Siguiente ➜';
+  } else {
+    btn.classList.add('shake');
+    const msg = wrongMessages[Math.floor(Math.random() * wrongMessages.length)];
+    fb.textContent = msg;
+    fb.className = 'feedback wrong';
+    setTimeout(() => btn.classList.remove('shake'), 500);
+  }
+}
+
+function nextQuestion() {
+  current++;
+  if (current >= 13) {
+    showEnd();
+  } else {
+    loadQuestion();
+  }
+}
+
+function showEnd() {
+  document.getElementById('q-card').style.display = 'none';
+  document.getElementById('progress-wrap').style.display = 'none';
+  document.getElementById('prog-fill').style.width = '100%';
+  document.getElementById('score-badge').textContent = '✨ Respuestas correctas: ' + score + ' / 13';
+  document.getElementById('end-card').style.display = 'block';
+}
+
+function restartGame() {
+  current = 0;
+  score = 0;
+  correctAnswered = false;
+  document.getElementById('end-card').style.display = 'none';
+  document.getElementById('q-card').style.display = 'block';
+  document.getElementById('progress-wrap').style.display = 'block';
+  loadQuestion();
+}
+
+// Floating petals
+const petalEmojis = ['🌸', '🌺', '🌹', '💐', '🌷'];
+const bg = document.getElementById('petals-bg');
+for (let i = 0; i < 14; i++) {
+  const p = document.createElement('div');
+  p.className = 'petal';
+  p.textContent = petalEmojis[Math.floor(Math.random() * petalEmojis.length)];
+  p.style.left = Math.random() * 100 + '%';
+  p.style.fontSize = (14 + Math.random() * 16) + 'px';
+  p.style.animationDuration = (8 + Math.random() * 10) + 's';
+  p.style.animationDelay = (Math.random() * 10) + 's';
+  bg.appendChild(p);
+}
+
+loadQuestion();
+</script>
+</body>
+</html>
