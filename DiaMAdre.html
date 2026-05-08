@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Día de las Madres 💐</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    min-height: 100vh;
+    background: #fdf6f0;
+    font-family: 'Lato', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* Pétalos flotantes */
+  .petals {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .petal {
+    position: absolute;
+    top: -40px;
+    font-size: 1.4rem;
+    animation: fall linear infinite;
+    opacity: 0.6;
+  }
+
+  @keyframes fall {
+    0%   { transform: translateY(-40px) rotate(0deg); opacity: 0.7; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* Pantalla de bienvenida */
+  #lock-screen {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .lock-card {
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(12px);
+    border-radius: 28px;
+    border: 1.5px solid #f0c8d0;
+    padding: 3rem 2.5rem;
+    max-width: 420px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(200, 100, 120, 0.12);
+  }
+
+  .flower-emoji {
+    font-size: 3.5rem;
+    display: block;
+    margin-bottom: 0.5rem;
+    animation: pulse 2.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+  }
+
+  .lock-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    color: #b5394f;
+    margin-bottom: 0.4rem;
+    line-height: 1.2;
+  }
+
+  .lock-subtitle {
+    font-size: 0.95rem;
+    color: #a07070;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+
+  .code-label {
+    font-size: 0.85rem;
+    color: #c0717e;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.8rem;
+    font-weight: 400;
+  }
+
+  .code-inputs {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .code-inputs input {
+    width: 58px;
+    height: 68px;
+    border: 2px solid #f0c8d0;
+    border-radius: 14px;
+    background: #fff8f9;
+    text-align: center;
+    font-size: 2rem;
+    font-family: 'Playfair Display', serif;
+    color: #b5394f;
+    outline: none;
+    transition: all 0.25s;
+    caret-color: transparent;
+  }
+
+  .code-inputs input:focus {
+    border-color: #e0718a;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(176, 80, 110, 0.1);
+    transform: translateY(-2px);
+  }
+
+  .code-inputs input.filled {
+    border-color: #d45a72;
+    background: #fff2f4;
+  }
+
+  .btn-unlock {
+    background: linear-gradient(135deg, #d45a72 0%, #b5394f 100%);
+    color: white;
+    border: none;
+    padding: 0.85rem 2.5rem;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-family: 'Lato', sans-serif;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: all 0.25s;
+    box-shadow: 0 6px 20px rgba(180, 60, 80, 0.3);
+  }
+
+  .btn-unlock:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(180, 60, 80, 0.38);
+  }
+
+  .btn-unlock:active {
+    transform: translateY(0px);
+  }
+
+  .error-msg {
+    color: #c0414f;
+    font-size: 0.85rem;
+    margin-top: 0.8rem;
+    opacity: 0;
+    transition: opacity 0.3s;
+    height: 20px;
+  }
+
+  .error-msg.visible {
+    opacity: 1;
+  }
+
+  /* Pantalla de sorpresa */
+  #surprise-screen {
+    display: none;
+    position: relative;
+    z-index: 10;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 2rem;
+    text-align: center;
+  }
+
+  #surprise-screen.show {
+    display: flex;
+  }
+
+  .surprise-card {
+    background: rgba(255,255,255,0.95);
+    border-radius: 28px;
+    border: 1.5px solid #f0c8d0;
+    padding: 3rem 2.5rem;
+    max-width: 480px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(200, 100, 120, 0.15);
+    animation: cardIn 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+
+  @keyframes cardIn {
+    from { opacity: 0; transform: scale(0.8) translateY(20px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .surprise-emoji {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 1rem;
+  }
+
+  .surprise-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.9rem;
+    color: #b5394f;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+  }
+
+  .surprise-msg {
+    font-size: 1rem;
+    color: #8a5a60;
+    line-height: 1.7;
+    margin-bottom: 2rem;
+  }
+
+  .btn-video {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, #d45a72 0%, #b5394f 100%);
+    color: white;
+    text-decoration: none;
+    padding: 1rem 2.2rem;
+    border-radius: 50px;
+    font-size: 1.05rem;
+    font-family: 'Lato', sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: all 0.25s;
+    box-shadow: 0 8px 24px rgba(180, 60, 80, 0.32);
+    border: none;
+    animation: btnPulse 2s ease-in-out infinite 1.2s;
+  }
+
+  @keyframes btnPulse {
+    0%, 100% { box-shadow: 0 8px 24px rgba(180, 60, 80, 0.32); }
+    50%       { box-shadow: 0 8px 36px rgba(180, 60, 80, 0.55); }
+  }
+
+  .btn-video:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 14px 36px rgba(180, 60, 80, 0.42);
+  }
+
+  .play-icon {
+    width: 22px;
+    height: 22px;
+    background: rgba(255,255,255,0.25);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .play-icon::after {
+    content: '';
+    border-style: solid;
+    border-width: 5px 0 5px 10px;
+    border-color: transparent transparent transparent white;
+    margin-left: 2px;
+  }
+
+  .hearts-row {
+    margin-top: 1.6rem;
+    font-size: 1.3rem;
+    letter-spacing: 0.25rem;
+    opacity: 0.7;
+  }
+
+  /* confetti burst */
+  .confetti-container {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  .conf {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    animation: confFall 2.5s ease-out forwards;
+  }
+
+  @keyframes confFall {
+    0%   { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(600deg); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Pétalos de fondo -->
+<div class="petals" id="petals"></div>
+
+<!-- Pantalla con clave -->
+<div id="lock-screen">
+  <div class="lock-card">
+    <span class="flower-emoji">🌸</span>
+    <h1 class="lock-title">Día de las Madres</h1>
+    <p class="lock-subtitle">Esta página tiene un mensaje especial para ti.<br>Ingresa el código secreto para abrirla 💕</p>
+
+    <p class="code-label">✦ Código secreto ✦</p>
+    <div class="code-inputs">
+      <input type="tel" maxlength="1" id="d1" inputmode="numeric" autocomplete="off">
+      <input type="tel" maxlength="1" id="d2" inputmode="numeric" autocomplete="off">
+      <input type="tel" maxlength="1" id="d3" inputmode="numeric" autocomplete="off">
+      <input type="tel" maxlength="1" id="d4" inputmode="numeric" autocomplete="off">
+    </div>
+
+    <button class="btn-unlock" onclick="checkCode()">✨ Abrir sorpresa</button>
+    <p class="error-msg" id="err">Código incorrecto. ¡Inténtalo de nuevo! 🌷</p>
+  </div>
+</div>
+
+<!-- Pantalla de sorpresa -->
+<div id="surprise-screen">
+  <div class="confetti-container" id="confetti"></div>
+  <div class="surprise-card">
+    <span class="surprise-emoji">🌺💖🌺</span>
+    <h2 class="surprise-title">¡Feliz Día, mamá!</h2>
+    <p class="surprise-msg">
+      Hiciste lo correcto 🌸<br>
+      Con todo nuestro amor, tus hijas.<br>
+      Tenemos algo especial preparado para ti…
+    </p>
+    <a href="https://youtube.com/shorts/TaNJ3kwlpjA" target="_blank" class="btn-video">
+      <span class="play-icon"></span>
+      Ver tu mensaje especial
+    </a>
+    <div class="hearts-row">💗 💕 💗 💕 💗</div>
+  </div>
+</div>
+
+<script>
+  // Pétalos flotantes
+  const petalEmojis = ['🌸','🌷','🌹','💮','🌺'];
+  const container = document.getElementById('petals');
+  for (let i = 0; i < 22; i++) {
+    const p = document.createElement('div');
+    p.className = 'petal';
+    p.textContent = petalEmojis[Math.floor(Math.random() * petalEmojis.length)];
+    p.style.left = Math.random() * 100 + 'vw';
+    p.style.animationDuration = (7 + Math.random() * 8) + 's';
+    p.style.animationDelay = (Math.random() * 12) + 's';
+    p.style.fontSize = (1 + Math.random() * 0.8) + 'rem';
+    container.appendChild(p);
+  }
+
+  // Navegación entre inputs
+  const inputs = [d1, d2, d3, d4];
+  inputs.forEach((inp, idx) => {
+    inp.addEventListener('input', () => {
+      inp.value = inp.value.replace(/\D/g,'').slice(-1);
+      if (inp.value) {
+        inp.classList.add('filled');
+        if (idx < 3) inputs[idx + 1].focus();
+      } else {
+        inp.classList.remove('filled');
+      }
+    });
+    inp.addEventListener('keydown', (e) => {
+      if (e.key === 'Backspace' && !inp.value && idx > 0) {
+        inputs[idx - 1].focus();
+        inputs[idx - 1].classList.remove('filled');
+      }
+      if (e.key === 'Enter') checkCode();
+    });
+  });
+
+  function checkCode() {
+    const code = inputs.map(i => i.value).join('');
+    if (code === '2338') {
+      showSurprise();
+    } else {
+      const err = document.getElementById('err');
+      err.classList.add('visible');
+      inputs.forEach(i => {
+        i.style.borderColor = '#e04060';
+        i.style.background = '#fff0f2';
+      });
+      setTimeout(() => {
+        err.classList.remove('visible');
+        inputs.forEach(i => {
+          i.style.borderColor = '';
+          i.style.background = '';
+          i.value = '';
+          i.classList.remove('filled');
+        });
+        inputs[0].focus();
+      }, 1600);
+    }
+  }
+
+  function showSurprise() {
+    document.getElementById('lock-screen').style.display = 'none';
+    const s = document.getElementById('surprise-screen');
+    s.classList.add('show');
+    launchConfetti();
+  }
+
+  function launchConfetti() {
+    const colors = ['#f4a0b0','#f7c5d2','#fce8ee','#e07090','#d4a0c8','#ffd1dc','#c8e6c9'];
+    const cont = document.getElementById('confetti');
+    for (let i = 0; i < 80; i++) {
+      const c = document.createElement('div');
+      c.className = 'conf';
+      c.style.left = Math.random() * 100 + 'vw';
+      c.style.top = '-10px';
+      c.style.background = colors[Math.floor(Math.random() * colors.length)];
+      c.style.animationDelay = (Math.random() * 1.2) + 's';
+      c.style.animationDuration = (2 + Math.random() * 1.5) + 's';
+      c.style.transform = `rotate(${Math.random()*45}deg)`;
+      cont.appendChild(c);
+    }
+    setTimeout(() => cont.innerHTML = '', 5000);
+  }
+
+  // Auto-focus al primer campo
+  document.getElementById('d1').focus();
+</script>
+</body>
+</html>
